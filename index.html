@@ -19,9 +19,27 @@
                 <button id="saveBtn">Save Note</button>
             </div>
             <div id="transcript">Your transcription will appear here...</div>
+            <div id="noteModal" class="modal">
+                <div class="modal-content">
+                    <span id="closeModal">&times;</span>
+                    <h2>Save Note</h2>
+                    <label>Title:</label><br />
+                    <input type="text" id="noteTitle" placeholder="Enter title" /><br /><br />
+                    <label>Content:</label><br />
+                    <textarea id="noteContent" rows="6"></textarea><br /><br />
+                    <label>Tag (optional):</label><br />
+                    <input type="text" id="noteTag" placeholder="e.g. Work, Personal" /><br /><br />
+                    <button id="saveNoteDetailsBtn">Save Note</button>
+                </div>
+            </div>
+            <div id="noteDetailsCard"></div>
+
         </main>
     </div>
     <script src="script.js"></script>
+    <!-- Include SweetAlert CDN in your HTML -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
 </body>
   
   
