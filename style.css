@@ -1,34 +1,44 @@
-
-body {
-    font-family: Arial, sans-serif;
-    margin: 40px;
-    background: #f5f5f5;
+#container {
+    display: flex;
+    height: 100vh;
 }
 
-h1 {
-    text-align: center;
+#sidebar {
+    width: 300px;
+    background: #333;
+    color: #fff;
+    padding: 20px;
+    overflow-y: auto;
 }
 
-#controls {
-    text-align: center;
-    margin-bottom: 20px;
+#sidebar h2 {
+    margin-top: 0;
 }
 
-#startStopBtn,
-#saveBtn {
-    padding: 10px 20px;
-    margin: 0 10px;
-    font-size: 16px;
+#notesList {
+    list-style: none;
+    padding: 0;
+}
+
+#notesList li {
+    background: #444;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    position: relative;
+}
+
+#notesList li img {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
     cursor: pointer;
 }
 
-#transcript {
-    width: 100%;
-    min-height: 200px;
-    padding: 15px;
-    font-size: 18px;
-    border: 2px solid #333;
-    background: #fff;
-    overflow-y: auto;
-    white-space: pre-wrap;
+#main {
+    flex: 1;
+    padding: 40px;
+    background: #f5f5f5;
 }

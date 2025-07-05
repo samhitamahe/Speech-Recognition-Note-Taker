@@ -5,9 +5,9 @@
  }
 
  const recognition = new SpeechRecognition();
- recognition.interimResults = true; // live, in-progress transcription while the user is still speaking.
+ recognition.interimResults = true; // live, in-progress transcription while the user is still speaking. Without this, you'd only get the final result after a pause.
  recognition.continuous = true; // Keeps listening until stopped
- recognition.lang = 'en-US';
+ recognition.lang = 'en-US'; // language for recognition
 
  const startStopBtn = document.getElementById('startStopBtn');
  const saveBtn = document.getElementById('saveBtn');
@@ -48,17 +48,55 @@
  });
 
  saveBtn.addEventListener('click', () => {
-   const note = finalTranscript.trim();
-   if (note) {
-     const blob = new Blob([note], { type: 'text/plain' });
-     const url = URL.createObjectURL(blob);
-     const link = document.createElement('a');
-     link.href = url;
-     link.download = 'note.txt';
-     link.click();
-     URL.revokeObjectURL(url);
-     alert('Note saved as note.txt!');
-   } else {
-     alert('Nothing to save yet!');
-   }
- });
+    const note = finalTranscript.trim();
+    if (note) {
+      let notes = JSON.parse(localStorage.getItem('notes')) || [];
+      notes.push(note);
+      localStorage.setItem('notes', JSON.stringify(notes));
+      finalTranscript = '';
+      transcriptDiv.textContent = '';
+      displayNotes();
+    } else {
+      alert('Nothing to save!');
+    }
+  });
+  
+  function displayNotes() {
+    let notes = JSON.parse(localStorage.getItem('notes')) || [];
+    const notesList = document.getElementById('notesList');
+    notesList.innerHTML = '';
+  
+    notes.forEach((note, index) => {
+      const li = document.createElement('li');
+      li.textContent = note;
+  
+      // Use your delete icon
+      const deleteIcon = document.createElement('img');
+      deleteIcon.src = 'recycle-bin.png'; 
+      deleteIcon.alt = 'Delete';
+      deleteIcon.addEventListener('click', () => {
+        deleteNote(index);
+      });
+  
+      li.appendChild(deleteIcon);
+      notesList.appendChild(li);
+    });
+  }
+  
+  
+  function deleteNote(index) {
+    let notes = JSON.parse(localStorage.getItem('notes')) || [];
+    notes.splice(index, 1);
+    localStorage.setItem('notes', JSON.stringify(notes));
+    displayNotes();
+  }
+  
+  window.onload = displayNotes;
+
+ /*
+  Creates a Blob (Binary Large OBject) from the transcript.
+
+A blob lets you handle data like files in memory.
+
+Here, it's a plain text blob.
+ */

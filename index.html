@@ -6,13 +6,24 @@
  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>🎙️ Speech Recognition Note Taker</h1>
-  <div id="controls">
-    <button id="startStopBtn">Start Listening</button>
-    <button id="saveBtn">Save Note</button>
-  </div>
-  <div id="transcript">Your transcription will appear here...</div>
+    <div id="container">
+        <aside id="sidebar">
+            <h2>🗒️ Saved Notes</h2>
+            <ul id="notesList"></ul>
+        </aside>
 
-  <script src="script.js"></script>
+        <main id="main">
+            <h1>🎙️ Speech Recognition Note Taker</h1>
+            <div id="controls">
+                <button id="startStopBtn">Start Listening</button>
+                <button id="saveBtn">Save Note</button>
+            </div>
+            <div id="transcript">Your transcription will appear here...</div>
+        </main>
+    </div>
+    <script src="script.js"></script>
 </body>
+  
+  
+
 </html>
