@@ -1,171 +1,147 @@
- // Check browser support
- window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
- if (!('SpeechRecognition' in window)) {
-   alert("Sorry, your browser does not support Speech Recognition. Try Chrome!");
- }
+const addNewNoteBtn = document.getElementById('addNewNoteBtn');
+const homeView = document.getElementById('homeView');
+const newNoteView = document.getElementById('newNoteView');
 
- const recognition = new SpeechRecognition();
- recognition.interimResults = true; // live, in-progress transcription while the user is still speaking. Without this, you'd only get the final result after a pause.
- recognition.continuous = true; // Keeps listening until stopped
- recognition.lang = 'en-US'; // language for recognition
+const startBtn = document.getElementById('startBtn');
+const stopBtn = document.getElementById('stopBtn');
+const saveNewNoteBtn = document.getElementById('saveNewNoteBtn');
+const cancelNewNoteBtn = document.getElementById('cancelNewNoteBtn');
 
- const startStopBtn = document.getElementById('startStopBtn');
- const saveBtn = document.getElementById('saveBtn');
- const transcriptDiv = document.getElementById('transcript');
+const newNoteTitle = document.getElementById('newNoteTitle');
+const newNoteContent = document.getElementById('newNoteContent');
+const transcriptStatus = document.getElementById('transcriptStatus');
 
- let isListening = false;
- let finalTranscript = '';
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+recognition.interimResults = true;
+recognition.continuous = true;
+recognition.lang = 'en-US';
 
- recognition.addEventListener('result', e => {
-   let interimTranscript = '';
-   for (let i = e.resultIndex; i < e.results.length; ++i) {
-     const transcript = e.results[i][0].transcript;
-     if (e.results[i].isFinal) {
-       finalTranscript += transcript + ' ';
-     } else {
-       interimTranscript += transcript;
-     }
-   }
-   transcriptDiv.textContent = finalTranscript + interimTranscript;
- });
+let isListening = false;
+let finalTranscript = '';
 
- recognition.addEventListener('end', () => {
-   if (isListening) {
-     recognition.start(); // Keep listening
-   }
- });
+addNewNoteBtn.addEventListener('click', () => {
+  showNewNoteView();
+});
 
- startStopBtn.addEventListener('click', () => {
-   if (isListening) {
-     recognition.stop();
-     isListening = false;
-     startStopBtn.textContent = 'Start Listening';
-   } else {
-     recognition.start();
-     isListening = true;
-     startStopBtn.textContent = 'Stop Listening';
-   }
- });
+function showNewNoteView() {
+  homeView.style.display = 'none';
+  newNoteView.style.display = 'block';
+  newNoteTitle.value = '';
+  newNoteContent.value = '';
+  finalTranscript = '';
+  transcriptStatus.textContent = 'Click Start Listening to begin.';
+}
 
- saveBtn.addEventListener('click', () => {
-    const noteText = finalTranscript.trim();
-    if (noteText) {
-      // Open the modal
-      document.getElementById('noteModal').style.display = 'block';
-      document.getElementById('noteContent').value = noteText;
+function showHomeView() {
+  homeView.style.display = 'block';
+  newNoteView.style.display = 'none';
+  displayNotes();
+}
+
+startBtn.addEventListener('click', () => {
+  finalTranscript = '';
+  transcriptStatus.textContent = 'Listening...';
+  recognition.start();
+  isListening = true;
+});
+
+stopBtn.addEventListener('click', () => {
+  recognition.stop();
+  isListening = false;
+  transcriptStatus.textContent = 'Stopped.';
+});
+
+recognition.addEventListener('result', e => {
+  let interimTranscript = '';
+  for (let i = e.resultIndex; i < e.results.length; ++i) {
+    const transcript = e.results[i][0].transcript;
+    if (e.results[i].isFinal) {
+      finalTranscript += transcript + ' ';
     } else {
-      alert('Nothing to save yet!');
+      interimTranscript += transcript;
     }
-  });
-  
-  function displayNotes() {
-    let notes = JSON.parse(localStorage.getItem('notes')) || [];
-    const notesList = document.getElementById('notesList');
-    notesList.innerHTML = '';
-  
-    notes.forEach((note, index) => {
-      const li = document.createElement('li');
-      li.textContent = note.title;
-  
-      li.addEventListener('click', () => {
-        showNoteDetails(note);
-      });
-  
-      const deleteIcon = document.createElement('img');
-      deleteIcon.src = 'https://i.ibb.co/JWLTZ6Yy/delete-icon.png';
-      deleteIcon.alt = 'Delete';
-      deleteIcon.addEventListener('click', (e) => {
-        e.stopPropagation();
-        deleteNote(index);
-      });
-  
-      li.appendChild(deleteIcon);
-      notesList.appendChild(li);
-    });
   }
-  
-  
-  function deleteNote(index) {
-    swal({
-      title: "Are you sure?",
-      text: "This note will be deleted permanently.",
-      icon: "warning",
-      buttons: true,
-      dangerMode: true,
-    })
-    .then((willDelete) => {
-      if (willDelete) {
-        let notes = JSON.parse(localStorage.getItem('notes')) || [];
-        notes.splice(index, 1);
-        localStorage.setItem('notes', JSON.stringify(notes));
-        displayNotes();
-        swal("Your note has been deleted!", { icon: "success" });
-      }
-    });
-  }
-  
-  
-  
-  window.onload = displayNotes;
-  document.getElementById('closeModal').onclick = () => {
-    document.getElementById('noteModal').style.display = 'none';
-  };
+  newNoteContent.value = finalTranscript + interimTranscript;
+});
 
-  window.onclick = function(event) {
-    const modal = document.getElementById('noteModal');
-    if (event.target == modal) {
-      modal.style.display = "none";
-    }
-  };
-  document.getElementById('saveNoteDetailsBtn').addEventListener('click', () => {
-    const title = document.getElementById('noteTitle').value.trim();
-    const content = document.getElementById('noteContent').value.trim();
-    const tag = document.getElementById('noteTag').value.trim();
-    const date = new Date().toLocaleString();
-  
-    if (title && content) {
+recognition.addEventListener('end', () => {
+  isListening = false;
+});
+
+saveNewNoteBtn.addEventListener('click', () => {
+  const title = newNoteTitle.value.trim();
+  const content = newNoteContent.value.trim();
+  const date = new Date().toLocaleString();
+
+  if (!title || !content) {
+    alert('Title and content are required!');
+    return;
+  }
+
+  let notes = JSON.parse(localStorage.getItem('notes')) || [];
+  notes.push({ title, content, tag: 'Personal', date });
+  localStorage.setItem('notes', JSON.stringify(notes));
+
+  showHomeView();
+});
+
+cancelNewNoteBtn.addEventListener('click', () => {
+  showHomeView();
+});
+function displayNotes() {
+  const notes = JSON.parse(localStorage.getItem('notes')) || [];
+  const notesList = document.getElementById('notesList');
+  notesList.innerHTML = '';
+
+  notes.forEach((note, index) => {
+    const li = document.createElement('li');
+    li.textContent = note.title;
+
+    li.addEventListener('click', () => {
+      showNoteDetails(note);
+    });
+
+    const deleteIcon = document.createElement('img');
+    deleteIcon.src = 'https://i.ibb.co/JWLTZ6Yy/delete-icon.png';
+    deleteIcon.alt = 'Delete';
+    deleteIcon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteNote(index);
+    });
+
+    li.appendChild(deleteIcon);
+    notesList.appendChild(li);
+  });
+}
+
+function showNoteDetails(note) {
+  const detailsCard = document.getElementById('noteDetailsCard');
+  detailsCard.innerHTML = `
+    <h2>${note.title}</h2>
+    <p><strong>Tag:</strong> ${note.tag || 'None'}</p>
+    <p><strong>Date:</strong> ${note.date}</p>
+    <p>${note.content}</p>
+  `;
+}
+
+window.onload = displayNotes;
+
+
+function deleteNote(index) {
+  swal({
+    title: "Are you sure?",
+    text: "This note will be deleted permanently.",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true,
+  }).then((willDelete) => {
+    if (willDelete) {
       let notes = JSON.parse(localStorage.getItem('notes')) || [];
-  
-      const newNote = {
-        title: title,
-        content: content,
-        tag: tag,
-        date: date
-      };
-  
-      notes.push(newNote);
+      notes.splice(index, 1);
       localStorage.setItem('notes', JSON.stringify(notes));
-  
-      // Reset fields
-      finalTranscript = '';
-      transcriptDiv.textContent = '';
-      document.getElementById('noteTitle').value = '';
-      document.getElementById('noteTag').value = '';
-  
-      // Close modal
-      document.getElementById('noteModal').style.display = 'none';
-  
-      // Refresh sidebar
       displayNotes();
-    } else {
-      alert('Title and content are required!');
+      swal("Your note has been deleted!", { icon: "success" });
     }
   });
-  function showNoteDetails(note) {
-    const detailsCard = document.getElementById('noteDetailsCard');
-    detailsCard.innerHTML = `
-      <h2>${note.title}</h2>
-      <p><strong>Tag:</strong> ${note.tag || 'None'}</p>
-      <p><strong>Date:</strong> ${note.date}</p>
-      <p>${note.content}</p>
-    `;
-  }
-  
-
- /*
-  Creates a Blob (Binary Large OBject) from the transcript.
-
-A blob lets you handle data like files in memory.
-
-Here, it's a plain text blob.
- */
+}
+// ✅ 10️⃣ Modal Close

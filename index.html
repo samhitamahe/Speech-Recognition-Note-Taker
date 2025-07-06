@@ -10,31 +10,38 @@
         <aside id="sidebar">
             <h2>🗒️ Saved Notes</h2>
             <ul id="notesList"></ul>
+            <button id="addNewNoteBtn">➕ Add New Note</button>
         </aside>
+          
 
         <main id="main">
-            <h1>🎙️ Speech Recognition Note Taker</h1>
-            <div id="controls">
-                <button id="startStopBtn">Start Listening</button>
-                <button id="saveBtn">Save Note</button>
-            </div>
-            <div id="transcript">Your transcription will appear here...</div>
-            <div id="noteModal" class="modal">
-                <div class="modal-content">
-                    <span id="closeModal">&times;</span>
-                    <h2>Save Note</h2>
-                    <label>Title:</label><br />
-                    <input type="text" id="noteTitle" placeholder="Enter title" /><br /><br />
-                    <label>Content:</label><br />
-                    <textarea id="noteContent" rows="6"></textarea><br /><br />
-                    <label>Tag (optional):</label><br />
-                    <input type="text" id="noteTag" placeholder="e.g. Work, Personal" /><br /><br />
-                    <button id="saveNoteDetailsBtn">Save Note</button>
+            <!-- Home View -->
+            <div id="homeView">
+                <h1>🎙️ Speech Recognition Note Taker</h1>
+                <div id="noteDetailsCard">
+                    <h2>No Note Selected</h2>
+                    <p>Select a note from the sidebar to view its details.</p>
                 </div>
             </div>
-            <div id="noteDetailsCard"></div>
-
+        
+            <!-- New Note View -->
+            <div id="newNoteView" style="display: none;">
+                <h1>Create New Note</h1>
+                <label>Title:</label><br />
+                <input type="text" id="newNoteTitle" placeholder="Enter note title" /><br /><br />
+                <label>Note:</label><br />
+                <textarea id="newNoteContent" placeholder="Speak or type here..." rows="8"></textarea><br /><br />
+                <div id="newNoteControls">
+                    <button id="startBtn">Start Listening</button>
+                    <button id="stopBtn">Stop Listening</button>
+                    <button id="saveNewNoteBtn">Save Note</button>
+                    <button id="cancelNewNoteBtn">Cancel</button>
+                </div>
+            </div>
+        
+            <div id="transcriptStatus"></div>
         </main>
+          
     </div>
     <script src="script.js"></script>
     <!-- Include SweetAlert CDN in your HTML -->

@@ -108,9 +108,31 @@ h1 {
     cursor: pointer;
 }
 #noteDetailsCard {
-    background: #fff;
+    background: #9fbbe6;
     padding: 20px;
     border: 2px solid #333;
     border-radius: 8px;
     margin-top: 20px;
+}
+#sidebar {
+    display: flex;
+    flex-direction: column;
+}
+
+#notesList {
+    flex: 1;
+    overflow-y: auto;
+}
+
+#addNewNoteBtn {
+    padding: 10px;
+    margin-top: auto;
+    background: #444;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+#addNewNoteBtn:hover {
+    background: #555;
 }
